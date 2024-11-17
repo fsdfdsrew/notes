@@ -1,6 +1,6 @@
 <template>
     <div class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
-        <button @click="closeModal" class="close-button" aria-label="Закрыть модальное окно">
+        <button @click="closeModal" class="round-button" aria-label="Закрыть модальное окно">
             <img src="@/assets/close.svg" alt="Иконка закрытия окна" />
         </button>
 
@@ -8,47 +8,43 @@
             <h2 class="text-autosize">Регистрация</h2>
 
             <div class="row">
-                <div class="input-group">
-                    <p for="email">Email</p>
-                    <input type="email" id="email" placeholder="Введите ваш email" v-model="email" aria-describedby="email-helper"/>
-                </div>
-                <div class="input-group">
-                  <p for="password">Пароль</p>
-                  <div class="password-container">
-                    <input :type="isPasswordVisible ? 'text' : 'password'" id="password" placeholder="Введите ваш пароль" v-model="password" aria-describedby="password-helper"/>
-                    <button @click="togglePasswordVisibility" class="password-toggle" aria-label="Показать/скрыть пароль">
-                      <img
-                      :src="isPasswordVisible ? require('@/assets/off-password.svg') : require('@/assets/on-password.svg')"
-                      alt="Toggle password visibility"
-                      class="eye-icon"
-                      />
-                    </button>
-                  </div>
-                </div>
-                <div class="input-group">
-                    <p for="password">Пароль ещё раз</p>
-                    <div class="password-container">
-                      <input :type="isPasswordVisibleAgain ? 'text' : 'password'" id="passwordAgain" placeholder="Введите ваш пароль" v-model="passwordAgain" aria-describedby="password-again-helper"/>
-                      <button @click="togglePasswordVisibilityAgain" class="password-toggle" aria-label="Показать/скрыть пароль">
-                        <img
-                        :src="isPasswordVisibleAgain ? require('@/assets/off-password.svg') : require('@/assets/on-password.svg')"
-                        alt="Toggle password visibility"
-                        class="eye-icon"
-                        />
-                      </button>
-                    </div>
-                </div>
+                <InputField 
+                  title="Email"
+                  id="email"
+                  type="email"
+                  v-model="email"
+                  placeholder="Введите ваш email"
+                  aria-describedby="email-helper"
+                />
+
+                <InputField 
+                  title="Пароль"
+                  id="password"
+                  type="password"
+                  v-model="password"
+                  placeholder="Введите ваш пароль"
+                  aria-describedby="password-helper"
+                />
+
+                <InputField 
+                  title="Пароль ещё раз"
+                  id="passwordAgain"
+                  type="password"
+                  v-model="passwordAgain"
+                  placeholder="Введите ваш пароль"
+                  aria-describedby="password-again-helper"
+                />
             </div>
 
-            <div div class="login-link-and-button">
+            <div div class="link-and-button">
                 <div class="login-link">
                     <p class="text-link-resize">У вас есть аккаунт? <a href="#" @click.prevent="openLogin" aria-label="Перейти на страницу входа">Войдите</a></p>
                 </div>
-                <button @click="register" class="reg-button" aria-label="Зарегистрироваться">Зарегистрироваться</button>
+                <button @click="register" class="log-reg-button" aria-label="Зарегистрироваться">Зарегистрироваться</button>
             </div>
 
-            <div v-if="error" class="error-message" role="alert" aria-live="assertive">
-              <p v-for="(msg, index) in error" :key="index">{{ msg }}</p>
+            <div v-if="error.length > 0" class="error-message" role="alert" aria-live="assertive">
+              <p>{{ error }}</p>
             </div>
         </div>
     </div>
@@ -59,6 +55,9 @@ import axios from 'axios';
 import { useRouter } from "vue-router";
 import { useAuthStoreWithPersistence } from "@/stores/authStore";
 import { useNotesStore } from "@/stores/notesStore";
+import { handleErrorResponse } from '@/services/errorHandler';
+
+import InputField from '@/components/InputField.vue';
 
   export default {
     data() {
@@ -66,10 +65,13 @@ import { useNotesStore } from "@/stores/notesStore";
         email: "",
         password: "",
         passwordAgain: "",
-        error: "",
+        error: [],
         isPasswordVisible: false,
         isPasswordVisibleAgain: false,
       };
+    },
+    components: {
+      InputField
     },
     setup() {
         const router = useRouter();
@@ -121,7 +123,7 @@ import { useNotesStore } from "@/stores/notesStore";
               authStore.setToken(token);
 
               console.log("Token saved");
-              this.error = "";
+              this.error = [];
 
               const userResponse = await axios.get("https://dist.nd.ru/api/auth", {
                   headers: {
@@ -147,96 +149,9 @@ import { useNotesStore } from "@/stores/notesStore";
               this.router.push({ name: "Dashboard" });
             }
           } catch (error) {
-            console.error("Error during registration:", error);
-            if (error.response && error.response.data && Array.isArray(error.response.data.message)) {
-              this.error = error.response.data.message
-            } else if (error.response && error.response.data && error.response.data.message) {
-              this.error = [error.response.data.message];
-            } else {
-              this.error = "Ошибка сети или сервера"; // Общая ошибка
-            }
-
+            this.error = handleErrorResponse(error);
           }
         },
     }
   };
 </script>
-  
-<style>
-.login-link-and-button {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.login-link a{
-  text-decoration: none;
-  color: var(--green-light);
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 700;
-  font-size: clamp(5px, 3vw, 18px);
-  line-height: 28px;
-}
-
-.reg-button {
-  width: 100%;
-  max-width: 267px;
-  height: 56px;
-  background: var(--green-light);
-  border-radius: 32px;
-  font-weight: 500;
-  font-size: 20px;
-  color: white;
-  border: none;
-  cursor: pointer;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .modal {
-    width: 90%;
-    height: auto;
-    padding: 56px;
-  }
-
-  .modal-content {
-    grid-template-rows: auto auto auto;
-  }
-}
-
-@media (max-width: 360px) {
-  .modal {
-    width: 100%;
-    height: 100%;
-    padding: 16px;
-  }
-  
-  .modal-content {
-    gap: 16px;
-    grid-template-rows: auto min-content auto;
-  }
-  
-  .modal-content h2 {
-    font-weight: 600;
-    font-size: 32px;
-    line-height: 36px;
-    align-self: end;
-  }
-
-  .login-link-and-button {
-    flex-direction: column-reverse;
-    justify-content: space-evenly;
-  }
-
-  .reg-button {
-    max-width: 100%;
-    margin-bottom: 12px;
-  }
-
-  .login-link {
-    text-align: center;
-  }
-}
-</style>
-  

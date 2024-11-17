@@ -58,18 +58,21 @@ p {
   color: var(--gray);
 }
 
+a {
+  text-decoration: none;
+  color: var(--green-light);
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(5px, 3vw, 18px);
+  line-height: 28px;
+}
+
 .text-normal {
   font-style: normal;
   font-weight: 500;
   font-size: 20px;
   line-height: 32px;
   color: var(--white);
-}
-
-input {
-  border-radius: 36px;
-  width: 620px;
-  height: 72px;
 }
 
 body {

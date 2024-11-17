@@ -78,9 +78,9 @@
         },
     },
   };
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
 .note-comp {
   position: relative;
   width: 100%;
@@ -88,7 +88,6 @@
   background-color: var(--light-background, var(--green-light));
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
   
   display: grid;
   grid-template-rows: min-content;

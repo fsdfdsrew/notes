@@ -47,40 +47,35 @@ import RegistrationModal from '@/components/RegistrationModal.vue';
         components: {
             LoginModal,
             RegistrationModal,
-        },    
+        },
+        mounted() {
+            document.body.style.overflow = '';
+        },
         methods: {
             openLogin() {
                 this.isLoginOpen = true;
+                document.body.style.overflow = 'hidden';
             },
             closeModal() {
                 this.isLoginOpen = false;
                 this.isRegistrationOpen = false;
+                document.body.style.overflow = '';
             },
             openRegistrationModal() {
                 this.isRegistrationOpen = true;
                 this.isLoginOpen = false;
+                document.body.style.overflow = 'hidden';
             },
             openLoginModal() {
                 this.isRegistrationOpen = false;
                 this.isLoginOpen = true;
+                document.body.style.overflow = '';
             },
         }
     };
 </script>
   
 <style scoped>
-    .home-header{
-        display: flex;
-        justify-content: space-between;
-        padding: 40px 160px;
-    }
-
-    .logo{
-        max-width: 218px;
-        min-width: 154px;
-        height: auto
-    }
-
     .login-button{
         width: 144px;
         height: 56px;
@@ -100,14 +95,6 @@ import RegistrationModal from '@/components/RegistrationModal.vue';
 
         border: none;
         cursor: pointer;
-    }
-
-    .login-button:hover {
-        background: var(--green-middle);
-    }
-
-    .login-button:active {
-        background: var(--green-dark);
     }
 
     .content {
@@ -141,21 +128,9 @@ import RegistrationModal from '@/components/RegistrationModal.vue';
         .text-block {
             text-align: center;
         }
-
-        .home-header{
-            padding: 20px 40px;
-        }
     }
 
     @media (max-width: 360px) {
-        .home-header{
-            padding: 20px 20px;
-        }
-
-        .logo{
-            width: 154px;
-        }
-
         .title {
             font-style: normal;
             font-weight: 900;

@@ -2,7 +2,7 @@
     <div class="dashboard">
       <header class="dashboard-header" aria-label="Главная панель управления">
         <div class="header-div">
-          <picture>
+          <picture @click="goToHome" style="cursor: pointer;">
             <source srcset="@/assets/logo.svg" media="(max-width: 360px)" />
             <img src="@/assets/logo-text.svg" alt="MyNotes" />
           </picture>
@@ -70,6 +70,10 @@ import NewNode from "@/components/NewNode.vue";
       };
     },
 
+    mounted() {
+      document.body.style.overflow = '';
+    },
+
     computed: {
       user() {
         const authStore = useAuthStoreWithPersistence();
@@ -90,9 +94,11 @@ import NewNode from "@/components/NewNode.vue";
       },
       openNewNode() {
         this.isNewNodeOpen = true;
+        document.body.style.overflow = 'hidden';
       },
       closeModal() {
         this.isNewNodeOpen = false;
+        document.body.style.overflow = '';
       },
       logout() {
         const authStore = useAuthStoreWithPersistence();
@@ -107,6 +113,10 @@ import NewNode from "@/components/NewNode.vue";
         console.log(id);
         this.notes = this.notes.filter((note) => note.id !== id);
       },
+
+      goToHome() {
+        this.$router.push({ name: 'Home' });
+      }
     }
   };
   </script>
@@ -233,12 +243,6 @@ import NewNode from "@/components/NewNode.vue";
 }
 
 @media (max-width: 360px) {
-  .modal {
-    width: 100%;
-    height: 100%;
-    padding: 16px;
-  }
-  
   .profile-container p{
     font-weight: 400;
     font-size: 14px;
